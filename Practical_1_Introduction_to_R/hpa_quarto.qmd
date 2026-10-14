@@ -1,0 +1,14 @@
+---
+title: "Brain Summary"
+author: "Claire Lee"
+---
+
+I am adding up the **total number** of genes with *regionally elevated expression* (higher expression than the rest of the brain) in the __forebrain__ (cerebral cortex, basal ganglia, thalamus, hypothalamus) regions of humans, pigs and mice. Data is drawn from the [HPA brain resource](www.proteinatlas.org/humanproteome/brain).
+
+```{r}
+sum(180, 83, 57, 110);
+sum(109, 157, 31, 45);
+sum (55, 185, 60, 98)
+```
+
+> Humans had the highest number of genes with regionally elevated expression in the forebrain (430).
