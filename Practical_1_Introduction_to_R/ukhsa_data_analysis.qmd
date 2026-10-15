@@ -1,0 +1,25 @@
+---
+title: "i think i hauve covid"
+author: "Claire Lee"
+---
+Loading files for displaying and organizing data.
+Loading csv.
+```{r}
+library(tidyverse)
+library(gt)
+covid <- read_csv("data/ukhsa_chart_download.csv")
+gt(covid)
+```
+
+```{r}
+covid <- read_csv("data/ukhsa_chart_download.csv")
+ggplot(covid, aes(
+  x = date,
+  y = metric_value
+)) + 
+  geom_line(color = "darkblue") +
+  geom_abline(color = "red") +
+  xlab("Date") +
+  ylab("Case Rate per 100k population")
+```
+

@@ -1,0 +1,108 @@
+---
+title: "Part 3 and 4"
+author: "Claire Lee"
+---
+
+### Part 3
+
+```{r}
+round(3.14159, digits=2)
+# digits is the Argument that modifies the function's behavior to round from 0 d.p. to 2 d.p.
+print(seq(1, 10, 2))
+#by default, first value From second value To third value By
+```
+```{r}
+print(rep(5, 7)); 
+print(rep(times=7, x=5))
+```
+
+press **Tab key** after opening bracket of function to see ***Arguments avaliable for that function***.
+
+```{r}
+x <- TRUE
+print(class(x))
+
+x <- 3.141596253589
+print(class(x))
+
+variable_time <- "time"
+print(class(variable_time))
+```
+```{r}
+cell_ID_1 <- "CX1"
+treated_1 <- TRUE
+num_cells_before_1 <- 5415
+num_cells_after_1 <- 1432
+
+cell_ID_2 <- "CX2"
+treated_2 <- FALSE
+num_cells_before_2 <- 8123
+num_cells_after_2 <- 7543
+```
+
+### Part 4
+```{r}
+library(fortunes)
+fortune()
+library(tidyverse)
+library(gt)
+```
+
+#### Vectors: a way to store multiple values in R. All values must be the same type (as categorized above)
+```{r}
+my_first_vector <- c(1, 5, 9)
+print(x = my_first_vector)
+
+num_cells_after_1 <- 1432
+num_cells_after_2 <- 7543
+
+
+cell_ID <- c("CX1", "CX2")
+treated <- c(TRUE, FALSE)
+num_cells_before <- c(5415, 8123)
+num_cells_after <- c(num_cells_after_1, num_cells_after_2)
+print (paste(cell_ID, treated, num_cells_before, num_cells_after))
+print(cell_ID[2])
+```
+```{r}
+all_my_pets <- c("dog", "horse", "guinea pig", "chicken", "cat")
+birds=all_my_pets[4]
+print(birds)
+```
+In vectors, many operations can be applied to an entire vector at once.
+
+#### Data Frames
+Common type of data structure. A table with rows and columns. Each row is a single sampling unit, each column is a specific piece of info. We use tibble() here.
+```{r}
+cell_IDs <- c("CX1", "CX2")
+treateds <- c(TRUE, FALSE)
+num_cells_befores <- c(5415, 8123)
+num_cells_afters <- c(1432, 7543)
+my_data_frame <- tibble (
+  cell_ID = cell_IDs,
+  treated = treateds, 
+  num_cells_before = num_cells_befores, 
+  num_cells_after = num_cells_afters
+)
+gt(my_data_frame)
+
+```
+
+```{r}
+my_data_frame <- tibble (
+  cell_ID = c("CX1", "CX2"),
+  treated = c(TRUE, FALSE), 
+  num_cells_before = c(5415, 8123), 
+  num_cells_after = c(1432, 7543)
+)
+print(my_data_frame)
+
+```
+### Weather Data
+heavy weather
+```{r}
+weather <- read_csv("data/weather_data.csv")
+gt(weather)
+```
+torrential downpour warning
+
