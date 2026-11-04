@@ -1,0 +1,13 @@
+---
+title: "Practical 2 Excersizes"
+author: "Claire Lee"
+---
+
+```{r}
+y = 12
+y == 7
+y < 15
+y > 20
+y <= 12
+```
+

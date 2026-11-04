@@ -1,0 +1,216 @@
+---
+title: "Worked Example"
+author: "Claire Lee"
+---
+## Part 1
+### Setup
+
+```{r}
+library(gt)
+library(tidyverse)
+library(maps)
+breeding <- read.csv("data/breeding_site_locations.csv")
+gt(breeding)
+```
+```{r}
+colnames(breeding)
+glimpse(breeding)
+```
+```{r}
+print(nrow(breeding))
+print(ncol(breeding))
+print(dim(breeding))
+##dim refers to dimensions: showing both rows and columns
+```
+### Migration site CSV file
+```{r}
+mig <- read.csv("data/migratory_connectivity_dataset.csv")
+gt(head(mig, 10))
+```
+
+### Pipe symbol
+Pipe symbol |> is an Operator that is used to link multiple steps in an analysis: passes values on Left to empty function on the right
+```{r}
+my_numbers <- c(2, 4, 6, 8)
+
+print(sqrt(sum(my_numbers)))
+
+print(my_numbers |>
+  sum() |>
+  sqrt())
+
+my_result <- my_numbers |>
+  sum() |>
+  sqrt()
+print(my_result)
+```
+
+
+Excersize
+
+```{r}
+input_vec <- c(5, -10, 4, -3)
+
+output_vec <- input_vec |>
+  mean() |>
+  abs() |>
+  round()
+
+print(output_vec)
+```
+
+To only show relevant columns, Pipe data to function select()
+```{r}
+select(breeding, Site, Longitude, Latitude)
+
+bird_breeding_selected <- breeding |>
+  select(Site, Longitude, Latitude) |>
+  distinct() |>
+  rename (Breeding_Longitude = Longitude, Breeding_Latitude = Latitude)
+
+gt(bird_breeding_selected)
+```
+
+Core excersize
+```{r}
+bird_migration_selected <- mig |>
+  select (
+    Site, 
+    winterLongitude, 
+    winterLatitude, 
+    pslon, 
+    pslat, 
+    iblon, 
+    iblat, 
+    awestlon,
+    awestlat
+    ) |>
+  distinct() |>
+  rename(Winter_Longitude = winterLongitude, Winter_Latitude = winterLatitude, Stopover_Longitude = pslon, Stopover_Latitude = pslat, Iberian_Longitude = iblon, Iberian_Latitude = iblat, Westmost_Longitude = awestlon, Westmost_Latitude = awestlat)
+
+gt(head(x = bird_migration_selected))
+
+```
+Comparison Operators: ==, !=, >, >=, <. <=. Returns true/false. 
+
+Function: filter(), uses comparison operators
+
+```{r}
+bird_breeding_exc <- bird_breeding_selected |>
+  filter(Site != "Spain")
+gt(bird_breeding_exc)
+
+bird_migration_exc <- bird_migration_selected  |>
+  filter(Site != "Spain")
+gt(bird_migration_exc)
+```
+
+## Part 2
+Find median values for each migration location for bird_migration_exc
+trhough function group_by() and summarise()
+(Glimpse gives brief overview, shows groups. Groups do not modify data, only modifies data operations)
+```{r}
+bird_migration_grouped <- bird_migration_exc |>
+  group_by(Site)
+gt(bird_migration_grouped)
+glimpse(bird_migration_grouped)
+```
+Summarise() used from this point on to calculate specific statistics per Group
+You can do multiple summary statistics in 1 summarise function
+
+na.rm = TRUE argument tells R to ignore any rows with a value of NA. 
+```{r}
+lat_df <- bird_migration_grouped |>
+  summarise(
+    Highest_Lat_Stopover = max(Stopover_Latitude, na.rm = TRUE),
+    Lowest_Lat_Stopover = min(Stopover_Latitude, na.rm = TRUE),
+    Mean_Lat_Stopover = mean(Stopover_Latitude, na.rm = TRUE),
+    Highest_Lat_Winter = max(Winter_Latitude, na.rm = TRUE),
+    Lowest_Lat_Winter = min(Winter_Latitude, na.rm = TRUE),
+    Mean_Lat_Winter = mean(Winter_Latitude, na.rm = TRUE)
+  )
+
+gt(lat_df)
+```
+
+Excersize time
+
+```{r}
+bird_migration_summary <- bird_migration_grouped |>
+  summarise(
+    Stopover_Longitude = median(Stopover_Longitude, na.rm = TRUE), 
+    Stopover_Latitude = median(Stopover_Latitude, na.rm = TRUE), 
+    Iberian_Longitude = median(Iberian_Longitude, na.rm = TRUE), 
+    Iberian_Latitude = median(Iberian_Latitude, na.rm = TRUE), 
+    Westmost_Longitude = median(Westmost_Longitude, na.rm = TRUE), 
+    Westmost_Latitude = median(Westmost_Latitude, na.rm = TRUE), 
+    Winter_Longitude = median(Winter_Longitude, na.rm = TRUE), 
+    Winter_Latitude = median(Winter_Latitude, na.rm = TRUE), 
+
+  )
+
+gt(bird_migration_summary)
+```
+### Joining Data Frames
+uses a Join:
+full_join() has All the rows from both data frames with NA when no data valiable
+inner_join() has ONLY the rows that have data from both data frames
+left_join has all data in first data frame and adds data from 2nd when avaliable (NA if not)
+right_join has all data in 2nd data frame and adds data from 1st when avaliable (NA if not)
+Site column is shared between breeding and migration tables. All sites present in all frames, so any type of join here is the same. 
+```{r}
+combined_bird_data <- full_join(bird_breeding_exc, bird_migration_summary)
+gt(combined_bird_data)
+```
+### Long and Wide Formats
+
+Using a Long format: contain everything in location type so each bird has multiple rows
+Use pivot_longer()
+
+*Arguments* for pivot_longer:
+> Select columns to reshape using cols
+> Split column names using names_sep
+> Create new column names using names_to
+
+```{r}
+combined_bird_piv <- combined_bird_data |>
+  pivot_longer(
+      cols = ends_with(c("_Longitude", "_Latitude")),
+      names_sep = "_",
+      names_to = c("Location_Type", ".value")
+  )
+gt(combined_bird_piv)
+```
+
+### Subsetting data frame
+Make 2 subsets: 1 for spring, 1 for autumn. 
+Spring has breeding stopover winter, Autumn has breeding iberian westmost winter. 
+
+filter() function is used here again, but pass Vector of values using operator %in%: 
+
+therefore can filter rows on Multiple values at once! (from One column)
+
+(unlike before, which was one at a time)
+
+
+make a new vector here, holding the lists of groups you Want
+
+```{r}
+Springful <- c("Breeding", "Stopover", "Winter")
+
+spring_data <- combined_bird_piv |>
+  filter(Location_Type %in% Springful)
+gt(spring_data)
+
+Autumnful <- c("Breeding", "Iberian", "Westmost", "Winter")
+
+autumn_data <- combined_bird_piv |>
+  filter(Location_Type %in% Autumnful)
+gt(autumn_data)
+
+```
+Save these as new csvs
+```{r}
+write_csv(spring_data, "output/birds_spring.csv")
+write_csv(autumn_data, "output/birds_autumn.csv")
+```
