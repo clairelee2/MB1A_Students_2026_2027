@@ -1,0 +1,31 @@
+---
+title: "Visualization Excersize"
+author: "Claire Lee"
+---
+
+## Part 3 Visualization
+```{r}
+gt(spring_data)
+```
+
+ggplot2 is different from ggplot
+ggplot is step 1 (tell which data frame to use)
+then ggplot builds Figures by making blank plot and adds laeyers
+
+```{r}
+ggplot(spring_data)
+```
+back to previous practical stuff
+```{r}
+my_data_frame <- tibble(
+  fruit = c("apple", "pear", "banana"),
+  length = c(22, 30, 55),
+  weight = c(150, 165, 170)
+)
+
+gt(my_data_frame)
+
+ggplot(my_data_frame, aes(x = length, y = weight)) +
+  geom_point()
+```
+
